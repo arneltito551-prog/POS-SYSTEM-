@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Untitled</title>
+    <link rel="stylesheet" href="./style.css">
+
+  </head>
+    
+  <body>
+  <!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>SariSari Store POS SYSTEM</title>
+  <!-- styles -->
+  <link rel="stylesheet" href="style.css" />
+  <!-- html5-qrcode fallback (scanner) -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
+</head>
+<body>
+  <!-- App bar -->
+  <header class="appbar">
+    <div class="app-title">SariSari Store POS SYSTEM</div>
+    <div class="appbar-actions">
+      <button id="btnExportAll" class="icon-btn" title="Export items CSV">Export</button>
+      <button id="btnPrintInv" class="icon-btn" title="Print inventory">Print</button>
+      <button id="btnClearAll" class="icon-btn danger" title="Clear all data">Clear</button>
+    </div>
+  </header>
+
+  <!-- HOME: Main menu only -->
+  <main id="home" class="screen screen-home">
+    <h1 class="logo">SariSari POS</h1>
+    <p class="muted">Tap a button to start</p>
+    <div class="menu-grid">
+      <button class="menu-btn primary" data-action="open" data-target="add">➕ Add Item</button>
+      <button class="menu-btn success" data-action="open" data-target="sell">💰 Sell Item</button>
+      <button class="menu-btn accent" data-action="open" data-target="inventory">📦 Inventory</button>
+      <!-- Sales button colored -->
+      <button class="menu-btn sales-btn" data-action="open" data-target="sales">📊 Sales</button>
+      <!-- Customers button colored -->
+      <button class="menu-btn customers-btn" data-action="open" data-target="customers">👥 Customers</button>
+    </div>
+    <div class="help muted">Grant camera permission when asked. For APK/WebView: load this page from <code>android_asset</code>.</div>
+  </main>
+
+  <!-- ADD SCREEN -->
+  <main id="add" class="screen screen-panel hidden">
+    <div class="top">
+      <button class="back" data-action="back">← Home</button>
+      <h2>Add Item</h2>
+    </div>
+
+    <div class="scanner-card">
+      <div class="scanner-head">Scanner</div>
+      <div class="preview" id="previewAdd">
+        <video id="videoAdd" autoplay playsinline muted></video>
+        <div id="qr-reader-add" style="display:none;"></div>
+        <div class="overlay"><div class="overlay-box"></div></div>
+      </div>
+      <div class="scanner-controls">
+        <button id="startAdd" class="btn primary">Start</button>
+        <button id="stopAdd" class="btn" disabled>Stop</button>
+        <button id="toggleFlashAdd" class="btn" title="Toggle Flash">💡 Flash</button>
+        <div id="statusAdd" class="muted small">Idle</div>
+      </div>
+    </div>
+
+    <div class="card form-card">
+      <label>Barcode</label>
+      <input id="add_barcode" placeholder="Scanned barcode appears here">
+      <label>Name</label>
+      <input id="add_name" placeholder="Item name">
+      <label>Price (₱)</label>
+      <input id="add_price" type="number" step="0.01" min="0" placeholder="0.00">
+      <label>Quantity</label>
+      <input id="add_qty" type="number" step="1" min="0" value="0">
+      <label>Picture (optional)</label>
+      <input id="add_image" type="file" accept="image/*" capture="environment">
+      <div id="imgPreviewWrap" class="img-preview-wrap hidden"><img id="imgPreview" alt="preview"></div>
+      <div class="row">
+        <button id="saveAdd" class="btn primary">Save Item</button>
+        <button id="clearAdd" class="btn">Clear</button>
+      </div>
+      <div id="msgAdd" class="muted small"></div>
+    </div>
+  </main>
+
+  <!-- SELL SCREEN -->
+  <main id="sell" class="screen screen-panel hidden">
+    <div class="top">
+      <button class="back" data-action="back">← Home</button>
+      <h2>Sell Item</h2>
+    </div>
+
+    <div class="scanner-card">
+      <div class="scanner-head">Scanner</div>
+      <div class="preview" id="previewSell">
+        <video id="videoSell" autoplay playsinline muted></video>
+        <div id="qr-reader-sell" style="display:none;"></div>
+        <div class="overlay"><div class="overlay-box"></div></div>
+      </div>
+      <div class="scanner-controls">
+        <button id="startSell" class="btn primary">Start</button>
+        <button id="stopSell" class="btn" disabled>Stop</button>
+        <button id="toggleFlashSell" class="btn" title="Toggle Flash">💡 Flash</button>
+        <div id="statusSell" class="muted small">Idle</div>
+      </div>
+    </div>
+
+    <div class="card form-card">
+      <label>Barcode</label>
+      <input id="sell_barcode" placeholder="Scanned barcode appears here">
+      <label>Quantity</label>
+      <input id="sell_qty" type="number" step="1" min="1" value="1">
+
+      <label>Payment Type</label>
+      <select id="paymentType">
+        <option value="cash">Cash</option>
+        <option value="credit">Credit (Store Credit)</option>
+      </select>
+
+      <div id="creditDetails" class="hidden">
+        <label>Customer</label>
+        <select id="customerSelect"></select>
+        <div style="display:flex;gap:8px;margin-top:6px;">
+          <input id="customerName" placeholder="Or enter new customer name">
+          <button id="createCustomerInline" class="btn">Add</button>
+        </div>
+        <div class="muted small" style="margin-top:6px;">Selecting a customer is required for credit sales.</div>
+      </div>
+
+      <div class="row" style="margin-top:8px;">
+        <button id="findSell" class="btn primary">Find</button>
+        <button id="confirmSell" class="btn success">Add to Cart</button>
+      </div>
+
+      <div id="sellInfo" class="muted small"></div>
+      <div id="msgSell" class="muted small"></div>
+    </div>
+
+    <!-- Cart & Payment area -->
+    <div class="card" style="margin-top:8px;">
+      <h3>Cart</h3>
+      <div id="sellCart" class="muted small">(No items yet)</div>
+      <div style="display:flex;gap:8px;margin-top:8px;align-items:center;">
+        <div style="flex:1;">
+          <label>Cash Paid (₱)</label>
+          <input id="cashPaid" type="number" step="0.01" min="0" placeholder="0.00">
+        </div>
+        <div style="width:160px;">
+          <label>Change</label>
+          <div id="changeDisplay" class="muted small">₱ 0.00</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button id="finalizeSell" class="btn success">Finalize Sale</button>
+        <button id="clearCart" class="btn">Clear Cart</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- INVENTORY SCREEN -->
+  <main id="inventory" class="screen screen-panel hidden">
+    <div class="top">
+      <button class="back" data-action="back">← Home</button>
+      <h2>Inventory</h2>
+    </div>
+
+    <div class="card">
+      <input id="searchInv" placeholder="Search barcode or name" class="search">
+      <div class="row" style="margin-bottom:8px;">
+        <button id="btnScanUpdate" class="btn accent">📷 Scan to Update Stock</button>
+        <button id="printInvBtn" class="btn">Print Inventory</button>
+      </div>
+
+      <!-- Inventory scanner card (new) -->
+      <div class="scanner-card hidden" id="invScannerCard">
+        <div class="scanner-head">Inventory Scanner</div>
+        <div class="preview" id="previewInv">
+          <video id="videoInv" autoplay playsinline muted></video>
+          <div id="qr-reader-inv" style="display:none;"></div>
+          <div class="overlay"><div class="overlay-box"></div></div>
+        </div>
+        <div class="scanner-controls">
+          <button id="stopInv" class="btn">Stop</button>
+          <div id="statusInv" class="muted small">Idle</div>
+        </div>
+      </div>
+
+      <div id="invResult" class="card muted small hidden"></div>
+
+      <div class="table-wrap inventory-grid" id="inventoryGrid"></div>
+      <div id="emptyInv" class="muted small">No items yet.</div>
+    </div>
+  </main>
+
+  <!-- SALES SCREEN -->
+  <main id="sales" class="screen screen-panel hidden">
+    <div class="top">
+      <button class="back" data-action="back">← Home</button>
+      <h2>Sales</h2>
+    </div>
+
+    <div class="card">
+      <div class="row" style="margin-bottom:10px;">
+        <button id="exportSales" class="btn">Export CSV</button>
+        <button id="clearSales" class="btn danger">Clear Sales</button>
+      </div>
+      <div id="salesList" class="sales-list"></div>
+      <div class="sales-summary muted small">
+        <div>Total transactions: <span id="salesCount">0</span></div>
+        <div>Total income: ₱ <span id="salesTotal">0.00</span></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- CUSTOMERS SCREEN -->
+  <main id="customers" class="screen screen-panel hidden">
+    <div class="top">
+      <button class="back" data-action="back">← Home</button>
+      <h2>Customers / Store Credit</h2>
+    </div>
+
+    <div class="card">
+      <div style="margin-bottom:10px;display:flex;gap:8px;align-items:center;">
+        <input id="cust_search" placeholder="Search customer name" class="search">
+        <button id="addCustomerBtn" class="btn">+ Add Customer</button>
+      </div>
+      <div id="customersList"></div>
+      <div id="emptyCustomers" class="muted small">No customers yet.</div>
+    </div>
+  </main>
+
+  <footer class="footer muted">Designed for WebView / APK use. Offline data stored locally.</footer>
+
+  <!-- Toast container -->
+  <div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- main script -->
+  <script src="app.js"></script>
+</body>
+</html>
+    <script  src="./script.js"></script>
+
+  </body>
+  
+</html>
